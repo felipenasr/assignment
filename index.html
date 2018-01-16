@@ -52,15 +52,29 @@
             objetoTecnico["nota_prova"] = objetoTecnico["nota_prova"].replace(",", ".");
             objetoTecnico["nota_prova"] = parseFloat(objetoTecnico["nota_prova"]);
             objetoTecnico["nota_prova"] = objetoTecnico["nota_prova"] * 10;
+            
 
-            console.log(perfil);
+            var skills = [objetoTecnico["html"],objetoTecnico["css"] ,objetoTecnico["bootstrap"],objetoTecnico["angular"],objetoTecnico["nodejs"],objetoTecnico["javascript"],objetoTecnico["git"]];
+
+            skills = getSkill(skills);
 
             return {
                 "stack": perfil,
-                "nota_prova": objetoTecnico["nota_prova"]
+                "nota_prova": objetoTecnico["nota_prova"],
+                "media_skills": skills
             }
         }
         
+
+        var getSkill = function(skills){
+            var media = 0;
+            skills.forEach(function (value, index){
+                value = (value *10)/4;
+                media = media + value;
+
+            })
+            return(media/7);
+        }
 
 
         var getProfile = function(objeto){
