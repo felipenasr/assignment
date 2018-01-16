@@ -34,25 +34,48 @@
             }
         ]
         var alunoComportamental = [{
-            "id":"0",
             "paixao": "59",
             "mindset": "54",
             "carreira": "22",
             "respeito": "23"
         },
         {
-            "id":"0",
             "paixao": "59",
             "mindset": "54",
-            "carreira": "22",
+            "carreira": "122",
             "respeito": "23"
         }]
+        
+        var alunoResume = function(objetoTecnico, objetoComportamental){
+            var teste = [objetoComportamental["paixao"], objetoComportamental["mindset"], objetoComportamental["carreira"],objetoComportamental["respeito"]];
+            var perfil = getProfile(teste);
+            objetoTecnico["nota_prova"] = objetoTecnico["nota_prova"].replace(",", ".");
+            objetoTecnico["nota_prova"] = parseFloat(objetoTecnico["nota_prova"]);
+            objetoTecnico["nota_prova"] = objetoTecnico["nota_prova"] * 10;
+
+            console.log(perfil);
+
+            return {
+                "stack": perfil,
+                "nota_prova": objetoTecnico["nota_prova"]
+            }
+        }
+        
+
 
         var getProfile = function(objeto){
-            for
-        }
-        var alunoResume = function(objetoTecnico, objetoComportamental){
-            var perfil = getProfile(objetoTecnico); 
+            var maior = [0, 0];
+            var stacks = ["paixao","mindset","carreira","respeito"];
+
+            objeto.forEach(function (element, index){
+                element = parseInt(element);
+                if(element > maior[0]){
+                    maior[0] = element;
+                    maior[1] = index;
+                }
+            });
+
+            return stacks[maior[1]];
         }
     </script>
 </body>
