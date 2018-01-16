@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+  <input type="file" id="inputCSV" onchange="pegaCSV(this)">
+  <div id="CSVsaida"></div>
+</body>
+<script>
+var leitorDeCSV = new FileReader()
+window.onload = function init() {
+    leitorDeCSV.onload = leCSV;
+}
+
+function pegaCSV(inputFile) {
+     var file = inputFile.files[0];
+     leitorDeCSV.readAsText(file);
+}
+
+function leCSV(evt) {
+
+var fileArr = evt.target.result.split('\n');
+var alunos = [];
+for (i = 0; i < fileArr.length; i++){
+  var fileLine = fileArr[i].split(',');
+  alunoId = fileLine[1];
+  alunoHtml = fileLine[9];
+  alunoCss = fileLine[10];
+  alunoBootstrap = fileLine[12];
+  alunoAngular = fileLine[15];
+  alunoNodeJs = fileLine[21];
+  alunoJs = fileLine[11];
+  alunoGit = fileLine[33];
+  alunoProva = fileLine[8];
+
+  alunoPaixao = fileLine[34];
+  alunoRespeito = fileLine[37];
+  alunoCarreira = fileLine[36];
+  alunoMindset = fileLine[35];
+  
+  alunoTecnico = {
+    "id":alunoId,
+    "html": alunoHtml,
+    "css":alunoCss,
+    "bootstrap":alunoBootstrap,
+    "angular":alunoAngular,
+    "nodejs": alunoNodeJs,
+    "javascript":alunoJs,
+    "git": alunoGit,
+    "nota_prova":alunoProva
+  }
+
+  alunoComportamental = {
+    "paixao": alunoPaixao,
+    "mindset": alunoMindset,
+    "carreira": alunoCarreira,
+    "respeito": alunoRespeito,
+  }
+  
+  aluno = {alunoId, alunoTecnico, alunoComportamental}
+  alunos.push(aluno);
+
+}
+
+console.log(alunos);
+}
+</script>
+</html>
