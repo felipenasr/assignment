@@ -1,96 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <style>
+    td{
+      padding-left:20px;
+    }
+  
+  </style>
 </head>
 <body>
-    
-    
-    <script>
-        var alunoTecnico = [{
-                "id": '0',
-                "html": '2',
-                "css": '2',
-                "bootstrap": '0',
-                "angular": '3',
-                "nodejs": '2',
-                "javascript": '3',
-                "git": '1',
-                "nota_prova": '0,50'
-            },{
-                "id": '1',
-                "html": '1',
-                "css": '3',
-                "bootstrap": '0',
-                "angular": '3',
-                "nodejs": '2',
-                "javascript": '3',
-                "git": '1',
-                "nota_prova": '0,41'
-            }
-        ]
-        var alunoComportamental = [{
-            "paixao": "59",
-            "mindset": "54",
-            "carreira": "22",
-            "respeito": "23"
-        },
-        {
-            "paixao": "59",
-            "mindset": "54",
-            "carreira": "122",
-            "respeito": "23"
-        }]
-        
-        var alunoResume = function(objetoTecnico, objetoComportamental){
-            var teste = [objetoComportamental["paixao"], objetoComportamental["mindset"], objetoComportamental["carreira"],objetoComportamental["respeito"]];
-            var perfil = getProfile(teste);
-            objetoTecnico["nota_prova"] = objetoTecnico["nota_prova"].replace(",", ".");
-            objetoTecnico["nota_prova"] = parseFloat(objetoTecnico["nota_prova"]);
-            objetoTecnico["nota_prova"] = objetoTecnico["nota_prova"] * 10;
-            
+  <input type="file" id="inputCSV" onchange="pegaCSV(this)"> <br>
+  <main id="tabelaGrupos" style="display:none">
+    <table>
+      <tbody id="tabelaBody">
+        <tr><td>ID</td> <td> GRUPO</td></tr>
+      </tbody>
 
-            var skills = [objetoTecnico["html"],objetoTecnico["css"] ,objetoTecnico["bootstrap"],objetoTecnico["angular"],objetoTecnico["nodejs"],objetoTecnico["javascript"],objetoTecnico["git"]];
+      </tbody>
 
-            skills = getSkill(skills);
+    </table>
 
-            return {
-                "stack": perfil,
-                "nota_prova": objetoTecnico["nota_prova"],
-                "media_skills": skills
-            }
-        }
-        
-
-        var getSkill = function(skills){
-            var media = 0;
-            skills.forEach(function (value, index){
-                value = (value *10)/4;
-                media = media + value;
-
-            })
-            return(media/7);
-        }
-
-
-        var getProfile = function(objeto){
-            var maior = [0, 0];
-            var stacks = ["paixao","mindset","carreira","respeito"];
-
-            objeto.forEach(function (element, index){
-                element = parseInt(element);
-                if(element > maior[0]){
-                    maior[0] = element;
-                    maior[1] = index;
-                }
-            });
-
-            return stacks[maior[1]];
-        }
-    </script>
+  </main>
 </body>
+<script>
+
+//define listas que vão guardar os objetos quando forem criados
+var alunos = [];
+var grupos =[];
+
+//construtor que define o objeto de alunos e as notas em cada aspecto avaliado
+function Aluno (fileLine){
+  this.id = fileLine[0]; 
+  this.html = parseInt(fileLine[9]);
+  this.css = parseInt(fileLine[10]);
+  this.bootstrap = parseInt(fileLine[12]);
+  this.angular = parseInt(fileLine[15]);
+  this.nodeJs = parseInt(fileLine[21]);
+  this.js = parseInt(fileLine[11]);
+  this.git = parseInt(fileLine[33]);
+  this.prova = parseInt(fileLine[8])/10;
+  this.skills = (this.html + this.css + this.bootstrap + this.angular + this.nodeJs + this.js + this.git)*4/7;
+  this.grupo = "";
+  alunos.push(this); //sempre que um aluno é criado ele é automaticamente inserido na lista de todos os alunos
+}
+
+Aluno.prototype.getSkill = function(){
+    return this.skills
+}
+
+Aluno.prototype.getScore = function(){
+  return this.prova/2+this.getSkill()/2
+}
+
+
+//função que define os grupos
+function Grupo (name){
+  this.name = name;
+  this.components = [];
+  grupos.push(this); //sempre que um grupo é criado ele é automaticamente inserido na lista de todos os grupos
+}
+
+Grupo.prototype.add = function(aluno){
+  this.components.push(aluno);
+  aluno.grupo = this.name
+}
+
+//processo de leitura do arquivo CSV
+var leitorDeCSV = new FileReader()
+window.onload = function init() {
+    leitorDeCSV.onload = leCSV;
+}
+
+function pegaCSV(inputFile) {
+     var file = inputFile.files[0];
+     leitorDeCSV.readAsText(file);
+}
+
+function leCSV(evt) {
+
+  var fileArr = evt.target.result.split('\n');
+
+  // para cada linha do arquivo CSV, cria um novo aluno com as informações da linha
+  // a primeira linha não é usada pois ela é apenas o header
+  for (i = 1; i < fileArr.length; i++){
+    var fileLine = fileArr[i].split(',');
+    var aluno = new Aluno(fileLine);
+    aluno.score = aluno.getScore();
+  }
+
+  // organiza a lista de alunos daquele com melhor placar (segundo o algoritmo) para o pior
+  alunos.sort(function(a, b) {   
+    return b.score - a.score; 
+});
+  separarGrupos();
+}
+
+
+function separarGrupos(){
+    //criar os 4 grupos
+    for(i = 0; i <4; i++){
+      grupo = new Grupo(i+1);
+    }
+
+    //adiciona cada elemento da lista de alunos a um grupo por vez
+    for(i = 0; i < alunos.length; i++){
+      switch(i%4){
+        case 0:
+          grupos[0].add(alunos[i]);
+          break
+        case 1:
+          grupos[1].add(alunos[i]);
+          break
+          
+        case 2:
+          grupos[2].add(alunos[i]);
+          break
+          
+        case 3:
+          grupos[3].add(alunos[i]);
+          break
+      }
+    }
+    printTable();
+  }
+
+  //função que monta o HTML da tabela
+function printTable (){
+    var tabela = document.getElementById("tabelaGrupos");
+    var tabelaBody = document.getElementById("tabelaBody");
+    tabela.style.display="block";
+
+      // organiza a lista de alunos por id
+  alunos.sort(function(a, b) {   
+    return a.id - b.id; 
+    }); 
+    for(i = 0; i < alunos.length; i ++){
+      html = "<tr><td>" + alunos[i].id + "</td><td>" + alunos[i].grupo + "</td></tr>";
+      tabelaBody.innerHTML += html;
+    }
+}
+</script>
 </html>
